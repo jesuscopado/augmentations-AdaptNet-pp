@@ -8,6 +8,8 @@ import numpy as np
 from skimage import transform
 from tqdm import tqdm
 
+from PIL import Image
+
 '''
 
 ** Notes **
@@ -45,10 +47,24 @@ freiburg_forest_colors = np.array([
 
 def rotate(image, gt, limits=(-13, 13)):
     angle = random.uniform(limits[0], limits[1])
-
     # Apply rotation to image
-    image = (transform.rotate(image, angle=angle, mode='edge') * 255).astype(np.uint8)
-    gt = (transform.rotate(gt, angle=angle, mode='edge') * 255).astype(np.uint8)
+    image = (transform.rotate(image, angle=angle, mode='edge', order=0) * 255).astype(np.uint8)
+    gt = (transform.rotate(gt, angle=angle, mode='edge',order=0) * 255).astype(np.uint8)
+
+    # also works with PILLOW
+    # im_pil = Image.fromarray(image)
+    # gt_pil = Image.fromarray(gt)
+    # im_pil = im_pil.rotate(angle, resample=Image.NEAREST)
+    # gt_pil = gt_pil.rotate(angle, resample=Image.NEAREST)
+    # image = np.asarray(im_pil)
+    # gt = np.asarray(gt_pil)
+
+    # also works with OPENCV
+    # image_center = tuple(np.array(image.shape[1::-1]) / 2)
+    # rot_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
+    # image = cv2.warpAffine(image, rot_mat, image.shape[1::-1], flags=cv2.INTER_NEAREST)
+    # gt = cv2.warpAffine(gt, rot_mat, image.shape[1::-1], flags=cv2.INTER_NEAREST)
+
     return image, gt
 
 
@@ -57,8 +73,8 @@ def skew(image, gt, limits=(-0.05, 0.10)):
     afine_tf = transform.AffineTransform(shear=random.uniform(limits[0], limits[1]))
 
     # Apply transform to image data
-    image = (transform.warp(image, inverse_map=afine_tf, mode='edge') * 255).astype(np.uint8)
-    gt = (transform.warp(gt, inverse_map=afine_tf, mode='edge') * 255).astype(np.uint8)
+    image = (transform.warp(image, inverse_map=afine_tf, mode='edge',order=0) * 255).astype(np.uint8)
+    gt = (transform.warp(gt, inverse_map=afine_tf, mode='edge',order=0) * 255).astype(np.uint8)
     return image, gt
 
 
@@ -94,7 +110,8 @@ def crop(image, gt, limits=(0.8, 1.0)):
     cropped_gt = gt[y: y + crop_height, x: x + crop_width]
 
     # Resize back to the original dimension
-    return cv2.resize(cropped_image, (width, height)), cv2.resize(cropped_gt, (width, height))
+    # return cv2.resize(cropped_image, (width, height)), cv2.resize(cropped_gt, (width, height))
+    return cv2.resize(cropped_image, (width, height)), cv2.resize(cropped_gt, (width, height), interpolation=cv2.INTER_NEAREST)
 
 
 def vignette(image, limits=(210, 300)):
