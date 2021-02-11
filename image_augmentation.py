@@ -223,4 +223,4 @@ if __name__ == '__main__':
     parser.add_argument('--output_dir', default='augmented', help='dir in which to save the augmentations')
     parser.add_argument('--aug_number', default=10, help='number of times the image will be augmented')
     args = parser.parse_args()
-    main(args.input_dir, args.output_dir, args.aug_number)
+    main(args.input_dir, args.output_dir, int(args.aug_number))
