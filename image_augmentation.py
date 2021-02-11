@@ -142,6 +142,7 @@ def flip(image, gt):
 def main(input_dir, output_dir, aug_number, continue_from):
     images_subfolder_name = 'rgb'
     gts_subfolder_name = 'GT_color'
+    gt_filename_ending = '_mask.png'
 
     # Create output dir if it doesn't exist
     if not os.path.exists(output_dir):
@@ -159,7 +160,7 @@ def main(input_dir, output_dir, aug_number, continue_from):
 
         # Extract image filename from path
         filename, _ = os.path.splitext(filename_w_ext)
-        gt_filename_w_ext = filename.split('_')[0] + '_mask.png'
+        gt_filename_w_ext = filename.split('_')[0] + gt_filename_ending
         gt_filename, _ = os.path.splitext(gt_filename_w_ext)
 
         # Construct path to both image and gt
