@@ -1,5 +1,4 @@
 import argparse
-import math
 import os
 import random
 
@@ -14,7 +13,7 @@ from PIL import Image
 
 ** Notes **
 
-From the paper Self-Supervised Model Adaptation for Multimodal Semantic Segmentation:
+From the paper Self-Supervised Model Adaptation for Multimodal Semantic Segmentation (https://arxiv.org/pdf/1808.03833.pdf):
 
 The augmentations that we apply include rotation (-13° to 13°),
 skewing (0.05 to 0.10), scaling (0.5 to 2.0), vignetting (210
@@ -23,7 +22,7 @@ to 40), contrast modulation (0.5 to 1.5) and flipping.
 
 ----
 
-From their github:
+From their github (https://github.com/DeepSceneSeg/AdapNet-pp#readme):
 
 Augment the training data(images and gt_mapped). In our work, we first resized the images in the dataset to 768x384 pixels and then apply a series of augmentations (random_flip, random_scale and random_crop).
 
@@ -49,7 +48,7 @@ def rotate(image, gt, limits=(-13, 13)):
     angle = random.uniform(limits[0], limits[1])
     # Apply rotation to image
     image = (transform.rotate(image, angle=angle, mode='edge', order=0) * 255).astype(np.uint8)
-    gt = (transform.rotate(gt, angle=angle, mode='edge',order=0) * 255).astype(np.uint8)
+    gt = (transform.rotate(gt, angle=angle, mode='edge', order=0) * 255).astype(np.uint8)
 
     # also works with PILLOW
     # im_pil = Image.fromarray(image)
@@ -69,26 +68,13 @@ def rotate(image, gt, limits=(-13, 13)):
 
 
 def skew(image, gt, limits=(-0.05, 0.10)):
-    # Create Afine transform
-    afine_tf = transform.AffineTransform(shear=random.uniform(limits[0], limits[1]))
+    # Create Affine transformation
+    affine_tf = transform.AffineTransform(shear=random.uniform(limits[0], limits[1]))
 
-    # Apply transform to image data
-    image = (transform.warp(image, inverse_map=afine_tf, mode='edge',order=0) * 255).astype(np.uint8)
-    gt = (transform.warp(gt, inverse_map=afine_tf, mode='edge',order=0) * 255).astype(np.uint8)
+    # Apply transformation to image data
+    image = (transform.warp(image, inverse_map=affine_tf, mode='edge', order=0) * 255).astype(np.uint8)
+    gt = (transform.warp(gt, inverse_map=affine_tf, mode='edge', order=0) * 255).astype(np.uint8)
     return image, gt
-
-
-'''
-# NOT USED
-def scale(image, limits=(0.5, 2.0)):
-    # Apply scaling (zoom) to image
-
-    # TODO: decide what to do here
-    #  Scaling 0.5 to 1.0 will shrink the image, how to fill all other pixels
-    #  Scaling >1.0 will need a crop, should it be random or central?
-
-    return transform.rescale(image, scale=random.uniform(limits[0], limits[1]), mode='constant', multichannel=True)
-'''
 
 
 def crop(image, gt, limits=(0.8, 1.0)):
@@ -110,8 +96,9 @@ def crop(image, gt, limits=(0.8, 1.0)):
     cropped_gt = gt[y: y + crop_height, x: x + crop_width]
 
     # Resize back to the original dimension
-    # return cv2.resize(cropped_image, (width, height)), cv2.resize(cropped_gt, (width, height))
-    return cv2.resize(cropped_image, (width, height)), cv2.resize(cropped_gt, (width, height), interpolation=cv2.INTER_NEAREST)
+    image = cv2.resize(cropped_image, (width, height))
+    gt = cv2.resize(cropped_gt, (width, height), interpolation=cv2.INTER_NEAREST)
+    return image, gt
 
 
 def vignette(image, limits=(210, 300)):
