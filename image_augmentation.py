@@ -161,35 +161,6 @@ def flip(image, gt):
     return image, gt
 
 
-def fix_label_colors(gt, color_palette=freiburg_forest_colors):
-    gt = cv2.cvtColor(gt, cv2.COLOR_BGR2RGB)
-
-    def closest_color(color):
-        min_distance = math.inf
-        closest = np.array([0, 0, 0]).astype(np.uint8)
-        for color_label in color_palette:
-            distance = np.sum(np.abs(color_label - color))
-            if distance < min_distance:
-                min_distance = distance
-                closest = color_label
-        return closest
-
-    for i in range(gt.shape[0]):
-        for j in range(gt.shape[1]):
-            color = gt[i, j, :].copy()
-            found = False
-            k = 0
-            while not found and k < color_palette.shape[0]:
-                if np.array_equal(color, color_palette[k]):
-                    found = True
-                k += 1
-            if not found:
-                gt[i, j, :] = closest_color(color)
-
-    gt = cv2.cvtColor(gt, cv2.COLOR_RGB2BGR)
-    return gt
-
-
 def main(input_dir, output_dir, aug_number):
     images_subfolder_name = 'rgb'
     gts_subfolder_name = 'GT_color'
@@ -233,9 +204,6 @@ def main(input_dir, output_dir, aug_number):
             image = vignette(image)
             image = modulate_brightness(image)
             image = modulate_contrast(image)
-
-            # Fix label colors that have changed because of the transformations
-            # gt = fix_label_colors(gt)
 
             # cv2.imshow('augmented', image)
             # cv2.waitKey()
