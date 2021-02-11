@@ -177,7 +177,7 @@ def main(input_dir, output_dir, aug_number, continue_from):
     # Iterate over all images in the folder
     for i, filename_w_ext in enumerate(tqdm(os.listdir(os.path.join(input_dir, images_subfolder_name)))):
         if i < continue_from:
-            break
+            continue
 
         # Extract image filename from path
         filename, _ = os.path.splitext(filename_w_ext)
