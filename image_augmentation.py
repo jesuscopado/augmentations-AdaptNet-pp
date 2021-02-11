@@ -161,7 +161,7 @@ def flip(image, gt):
     return image, gt
 
 
-def main(input_dir, output_dir, aug_number):
+def main(input_dir, output_dir, aug_number, continue_from):
     images_subfolder_name = 'rgb'
     gts_subfolder_name = 'GT_color'
 
@@ -175,7 +175,9 @@ def main(input_dir, output_dir, aug_number):
     f = open('entry_pairs.txt', 'w')
 
     # Iterate over all images in the folder
-    for filename_w_ext in tqdm(os.listdir(os.path.join(input_dir, images_subfolder_name))):
+    for i, filename_w_ext in enumerate(tqdm(os.listdir(os.path.join(input_dir, images_subfolder_name)))):
+        if i < continue_from:
+            break
 
         # Extract image filename from path
         filename, _ = os.path.splitext(filename_w_ext)
@@ -189,6 +191,9 @@ def main(input_dir, output_dir, aug_number):
         # Read image and ground truth image
         image_src = cv2.imread(image_path)
         gt_src = cv2.imread(gt_image_path)
+        if image_src is None or gt_src is None:
+            print(f"Image pair ({image_path}, {gt_image_path}) cannot be found.")
+            break
 
         # Augment the image
         for i in range(aug_number):
@@ -222,5 +227,6 @@ if __name__ == '__main__':
     parser.add_argument('--input_dir', default='img', help='dir where both subdirs with images and labels are')
     parser.add_argument('--output_dir', default='augmented', help='dir in which to save the augmentations')
     parser.add_argument('--aug_number', default=10, help='number of times the image will be augmented')
+    parser.add_argument('--continue_from', default=0, help='continue doing augmentations from this image count')
     args = parser.parse_args()
     main(args.input_dir, args.output_dir, int(args.aug_number))
