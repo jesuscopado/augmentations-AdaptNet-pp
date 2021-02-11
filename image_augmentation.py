@@ -34,15 +34,6 @@ Convert the training data (augmented), test data and validation data into the .t
 
 '''
 
-freiburg_forest_colors = np.array([
-    [170, 170, 170],  # Road
-    [0, 255, 0],  # Grass
-    [102, 102, 51],  # Vegetation
-    [0, 60, 0],  # Tree
-    [0, 120, 255],  # Sky
-    [0, 0, 0],  # Obstacle
-]).astype(np.uint8)  # RGB representation of the classes
-
 
 def rotate(image, gt, limits=(-13, 13)):
     angle = random.uniform(limits[0], limits[1])
@@ -180,10 +171,10 @@ def main(input_dir, output_dir, aug_number, continue_from):
         gt_src = cv2.imread(gt_image_path)
         if image_src is None or gt_src is None:
             print(f"Image pair ({image_path}, {gt_image_path}) cannot be found.")
-            break
+            continue
 
         # Augment the image
-        for i in range(aug_number):
+        for j in range(aug_number):
             image, gt = image_src.copy(), gt_src.copy()
 
             # cv2.imshow('original', image)
@@ -201,8 +192,8 @@ def main(input_dir, output_dir, aug_number, continue_from):
             # cv2.waitKey()
 
             # Save augmented images on disk and their paths in the entry pair txt file
-            path_to_image = os.path.join(os.path.join(output_dir, images_subfolder_name), f'{filename}_{i}.jpg')
-            path_to_gt = os.path.join(os.path.join(output_dir, gts_subfolder_name), f'{gt_filename}_{i}.png')
+            path_to_image = os.path.join(os.path.join(output_dir, images_subfolder_name), f'{filename}_{j}.jpg')
+            path_to_gt = os.path.join(os.path.join(output_dir, gts_subfolder_name), f'{gt_filename}_{j}.png')
             cv2.imwrite(path_to_image, image)
             cv2.imwrite(path_to_gt, gt)
             f.write(f'{path_to_image} {path_to_gt}\n')
