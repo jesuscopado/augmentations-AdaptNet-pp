@@ -214,7 +214,7 @@ def main(input_dir, output_dir, aug_number):
             cv2.imwrite(path_to_image, image)
             cv2.imwrite(path_to_gt, gt)
             f.write(f'{path_to_image} {path_to_gt}\n')
-        f.close()
+    f.close()
 
 
 if __name__ == '__main__':
