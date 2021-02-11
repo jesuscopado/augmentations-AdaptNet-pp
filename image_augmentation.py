@@ -139,7 +139,7 @@ def flip(image, gt):
     return image, gt
 
 
-def main(input_dir, output_dir, aug_number, continue_from):
+def main(input_dir, output_dir, aug_number, continue_from, resolution=(768, 384)):
     images_subfolder_name = 'rgb'
     gts_subfolder_name = 'GT_color'
     gt_filename_ending = '_mask.png'
@@ -173,6 +173,10 @@ def main(input_dir, output_dir, aug_number, continue_from):
         if image_src is None or gt_src is None:
             print(f"Image pair ({image_path}, {gt_image_path}) cannot be found.")
             continue
+
+        # Resize image onto the desired resolution
+        image_src = cv2.resize(image_src, resolution)
+        gt_src = cv2.resize(gt_src, resolution, interpolation=cv2.INTER_NEAREST)
 
         # Augment the image
         for j in range(aug_number):
