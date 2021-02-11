@@ -229,4 +229,4 @@ if __name__ == '__main__':
     parser.add_argument('--aug_number', default=10, help='number of times the image will be augmented')
     parser.add_argument('--continue_from', default=0, help='continue doing augmentations from this image count')
     args = parser.parse_args()
-    main(args.input_dir, args.output_dir, int(args.aug_number))
+    main(args.input_dir, args.output_dir, int(args.aug_number), int(args.continue_from))
