@@ -7,6 +7,7 @@ import numpy as np
 from skimage import transform
 from tqdm import tqdm
 
+from convert_labels_to_1ch import convert_label_to_1ch
 from PIL import Image
 
 '''
@@ -195,6 +196,9 @@ def main(input_dir, output_dir, aug_number, continue_from, resolution=(768, 384)
 
             # cv2.imshow('augmented', image)
             # cv2.waitKey()
+
+            # Convert label colored image to 1 channel
+            gt = convert_label_to_1ch(gt)
 
             # Save augmented images on disk and their paths in the entry pair txt file
             path_to_image = os.path.join(os.path.join(output_dir, images_subfolder_name), f'{filename}_{j}.jpg')
