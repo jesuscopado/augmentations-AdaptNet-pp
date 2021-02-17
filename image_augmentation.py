@@ -8,7 +8,6 @@ from skimage import transform
 from tqdm import tqdm
 
 from convert_labels_to_1ch import convert_label_to_1ch
-from PIL import Image
 
 '''
 
@@ -140,22 +139,20 @@ def flip(image, gt):
     return image, gt
 
 
-def main(input_dir, output_dir, aug_number, continue_from, resolution=(768, 384)):
-    images_subfolder_name = 'rgb'
-    gts_subfolder_name = 'GT_color'
+def main(input_dir, output_dir, modality_folder_name, gt_folder_name, aug_number, continue_from, resolution=(768, 384)):
     gt_filename_ending = '_mask.png'
 
     # Create output dir if it doesn't exist
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
-        os.makedirs(os.path.join(output_dir, images_subfolder_name))
-        os.makedirs(os.path.join(output_dir, gts_subfolder_name))
+        os.makedirs(os.path.join(output_dir, modality_folder_name))
+        os.makedirs(os.path.join(output_dir, gt_folder_name))
 
     # Create txt file with the entry pairs
     f = open('entry_pairs.txt', 'w')
 
     # Iterate over all images in the folder
-    for i, filename_w_ext in enumerate(tqdm(os.listdir(os.path.join(input_dir, images_subfolder_name)))):
+    for i, filename_w_ext in enumerate(tqdm(os.listdir(os.path.join(input_dir, modality_folder_name)))):
         if i < continue_from:
             continue
 
@@ -165,8 +162,8 @@ def main(input_dir, output_dir, aug_number, continue_from, resolution=(768, 384)
         gt_filename, _ = os.path.splitext(gt_filename_w_ext)
 
         # Construct path to both image and gt
-        image_path = os.path.join(os.path.join(input_dir, images_subfolder_name), filename_w_ext)
-        gt_image_path = os.path.join(os.path.join(input_dir, gts_subfolder_name), gt_filename_w_ext)
+        image_path = os.path.join(os.path.join(input_dir, modality_folder_name), filename_w_ext)
+        gt_image_path = os.path.join(os.path.join(input_dir, gt_folder_name), gt_filename_w_ext)
 
         # Read image and ground truth image
         image_src = cv2.imread(image_path)
@@ -201,8 +198,8 @@ def main(input_dir, output_dir, aug_number, continue_from, resolution=(768, 384)
             gt = convert_label_to_1ch(gt)
 
             # Save augmented images on disk and their paths in the entry pair txt file
-            path_to_image = os.path.join(os.path.join(output_dir, images_subfolder_name), f'{filename}_{j}.jpg')
-            path_to_gt = os.path.join(os.path.join(output_dir, gts_subfolder_name), f'{gt_filename}_{j}.png')
+            path_to_image = os.path.join(os.path.join(output_dir, modality_folder_name), f'{filename}_{j}.jpg')
+            path_to_gt = os.path.join(os.path.join(output_dir, gt_folder_name), f'{gt_filename}_{j}.png')
             cv2.imwrite(path_to_image, image)
             cv2.imwrite(path_to_gt, gt)
             f.write(f'{path_to_image} {path_to_gt}\n')
@@ -213,7 +210,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Augment image.')
     parser.add_argument('--input_dir', default='img', help='dir where both subdirs with images and labels are')
     parser.add_argument('--output_dir', default='augmented', help='dir in which to save the augmentations')
+    parser.add_argument('--modality_folder_name', default='rgb', help='folder name where the modality images are')
+    parser.add_argument('--gt_folder_name', default='GT_color', help='folder name where the gt images are')
     parser.add_argument('--aug_number', default=10, help='number of times the image will be augmented')
     parser.add_argument('--continue_from', default=0, help='continue doing augmentations from this image count')
     args = parser.parse_args()
-    main(args.input_dir, args.output_dir, int(args.aug_number), int(args.continue_from))
+    main(args.input_dir, args.output_dir, args.modality_folder_name, args.gt_folder_name,
+         int(args.aug_number), int(args.continue_from))
