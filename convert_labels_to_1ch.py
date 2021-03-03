@@ -23,16 +23,20 @@ def convert_label_to_1ch(img, mapping=rgb_to_label_id):
     return out
 
 
-def main(input_dir):
+def main(input_dir, output_dir):
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
     for filename in tqdm(os.listdir(input_dir)):
         image_path = os.path.join(input_dir, filename)
         img = cv2.imread(image_path)
         out = convert_label_to_1ch(img)
-        cv2.imwrite(image_path, out)
+        cv2.imwrite(os.path.join(output_dir, filename), out)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--input_dir', default='augmented/GT_color')
+    parser.add_argument('--input_dir', default='C:/projects/datasets/freiburg_forest_annotated/train/GT_color')
+    parser.add_argument('--output_dir', default='C:/projects/datasets/freiburg_forest_annotated/train/GT')
     args = parser.parse_args()
-    main(args.input_dir)
+    main(args.input_dir, args.output_dir)
