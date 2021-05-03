@@ -19,12 +19,12 @@ def compute_evi(p_nir, p_red, p_blue):
     evi = G * (p_nir - p_red) / (p_nir + (C1 * p_red) - (C2 * p_blue) + L)
     # evi[evi > 1] = 1
     # evi[evi < -1] = -1
-    return ((evi + 1) * 255 / 2).astype(np.uint8)
+    return ((evi + 1) * 255 / 2).round().astype(np.uint8)
 
 
 def compute_evi2(p_nir, p_red):
     evi2 = 2.5 * ((p_nir - p_red) / (p_nir + 2.4 * p_red + 1))
-    return ((evi2 + 1) * 255 / 2.5).astype(np.uint8)
+    return ((evi2 + 1) * 255 / 2.5).round().astype(np.uint8)
 
 
 def minmax_norm(numpy_array):
