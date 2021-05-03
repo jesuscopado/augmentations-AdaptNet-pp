@@ -24,7 +24,7 @@ def compute_evi(p_nir, p_red, p_blue):
 
 def compute_evi2(p_nir, p_red):
     evi2 = 2.5 * ((p_nir - p_red) / (p_nir + 2.4 * p_red + 1))
-    return ((evi2 + 1) * 255 / 2).astype(np.uint8)
+    return ((evi2 + 1) * 255 / 2.5).astype(np.uint8)
 
 
 def minmax_norm(numpy_array):
